@@ -15,13 +15,13 @@ const Donerlist = () => {
   }
 
   const search = async(value) =>{
-    if(value == null || value == "")
+    if(value === null || value === "")
     {
       getData()
     }
     else
     {
-      const response =await   fetch(`http://localhost:5000/searchbyaddress/${value}`)
+      const response =await   fetch(`http://localhost:5000/doner/searchbyaddress/${value}`)
       const data1 = await response.json()
       setAllDoners(data1)
     }
@@ -45,6 +45,7 @@ const DeleteDoner = async (id) =>{
             };
             
             const response = await fetch('http://localhost:5000/doner/deleteDoner/'+id, requestOptions);
+            console.log(response)
                    
            
             alert("Delete Successfully")
@@ -52,7 +53,7 @@ const DeleteDoner = async (id) =>{
             window.location.reload()
            
       }
-    }
+    }
 
 
   return (
@@ -68,7 +69,7 @@ const DeleteDoner = async (id) =>{
                         {/* <button class="btn search-btn" type="submit" onClick={filterByAddress} >Search</button> */}
                     </form>
                 </div>
-            </div>
+            </div>
 
       {/* <td>
         <form className="form-inline my-2 my-lg-0">
