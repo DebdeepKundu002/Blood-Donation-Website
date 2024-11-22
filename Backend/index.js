@@ -21,7 +21,7 @@ app.use(cors({
 }))
 
 // const Doner = require('./Doner')
-const mongodburl = 'mongodb+srv://Deb643:Database643@cluster0.7fofgik.mongodb.net/'
+const mongodburl = 'mongodb+srv://Deb643:Database643@cluster0.7fofgik.mongodb.net/Blood_Donation'
 
 mongoose.connect(mongodburl);
 const database = mongoose.connection;
