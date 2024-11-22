@@ -39,8 +39,8 @@ function BloodyUserRegistration(){
         else
         {
             setMessage("Registration Failed")
-        }
-    }
+        }
+    }
     return(
         <>
 
