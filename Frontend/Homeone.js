@@ -6,9 +6,7 @@ import Footer1 from './Footer1'
 
 const Homeone = () => {
 
-    useEffect(() =>{
-      
-    },[])
+   
 
   return (
 
