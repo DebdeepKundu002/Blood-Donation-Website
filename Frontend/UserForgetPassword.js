@@ -37,8 +37,8 @@ function UserForgetPassword(){
         else
         {
             setMessage("Sorry Your Email is Not Registered, Try Again")
-        }
-    }
+        }
+    }
 
 const updatePassword = async () =>{
     // alert("update")
