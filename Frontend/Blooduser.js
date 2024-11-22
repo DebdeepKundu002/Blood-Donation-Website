@@ -41,8 +41,8 @@ function BloodUser(){
         else
         {
             setMessage("Login Failed")
-        }
-    }
+        }
+    }
 
     const showHide = (id) =>{
         if(flag == 0)
@@ -110,6 +110,3 @@ function BloodUser(){
 }
 
 export default BloodUser
-           
-
-      
