@@ -1,115 +1,135 @@
-import { useState } from "react"
+import React, { useEffect, useState } from 'react'
+import { useLocation } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 import './App.css'
-import { Link } from "react-router-dom"
-import { useNavigate } from 'react-router-dom';
-import { FaEye, FaEyeSlash } from "react-icons/fa";
 
+function BDEdit(){
 
-function BloodUser(){
-
+    const [id, setId] = useState('')
     const [email, setEmail] = useState('')
-    const [password, setpassword] = useState('')
+    const [name, setName] = useState('')
+    const [bloodgroup, setBloodgroup] = useState('')
+    const [address, setAddress] = useState('')
+    // const [password, setpassword] = useState('')
+    // const [gender, setGender] = useState('')
+    const[contact, setcontact] = useState('')
     const[message, setMessage] = useState('')
 
-    const [flag, setFlag] = useState(0)
-   
-    const navigate = useNavigate(); 
-    
-    const loginUser = async () =>{
-        const new_user =  {
+    const location = useLocation();
+    // const navigate = useNavigate();
+
+    const update = async () =>{
+        const new_donor =  {
+            "name": name,
             "email": email,
-            "password": password,
+            // "password": password,
+            "address": address,
+            "contact": contact,
+            "bloodgroup": bloodgroup
         }
 
         const requestOptions = {
-            method: 'POST',
+            method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(new_user)
+            body: JSON.stringify(new_donor)
         };
 
-        const response = await fetch('http://localhost:5000/user/loginUser', requestOptions);
+        const response = await fetch(`http://localhost:5000/doner/updateDoner/${id}`, requestOptions);
         const data = await response.json();
 
-        if(data.message == true)
+        if(data._id!=null)
         {
-            localStorage.setItem("loggedUser", email)
-            setMessage("Login Successfully")
-            //navigate to dashboard or home page
-            window.location.href = "/search"
-            //navigate('/usearch');
+            setMessage("Update Successfully")
         }
         else
         {
-            setMessage("Login Failed")
-        }
-    }
-
-    const showHide = (id) =>{
-        if(flag == 0)
-        {
-            setFlag(1)
-        }
-        else{
-            setFlag(0)
+            setMessage("Update Failed")
         }
     }
 
+       
+
+        const getDatabyId = async (id) =>{
+            const response = await fetch('http://localhost:5000/doner/getDonerById/'+id);
+            const data = await response.json();
+            console.log(37, data)
+            setName(data.name);
+            setEmail(data.email);
+            // setpassword(data.password);
+            setAddress(data.address);
+            setcontact(data.contact);
+            setBloodgroup(data.bloodgroup);
+        }
+
+        useEffect(() =>{
+            const id = location.state.id;
+            console.log(48, id)
+            setId(id)
+            getDatabyId(id)
+         },[])
+
+    
     return(
         <>
 
         <table>
             <tr>
-                <th style={{color: 'black'}}>User Login</th>
+                <th style={{color: 'red'}}>Doner's Registration</th>
+            </tr>
+             <tr>
+                <td>Enter Your Name</td>
+                <td><input type="text" name="" placeholder="Enter Name" onChange={(e) => setName(e.target.value)} value={name}/></td>
             </tr>
             <tr>
-                <td style={{color: 'blue'}}><b>Enter your email</b></td>
-                <td><input type="email" name="" placeholder="Enter your email" onChange={(e) => setEmail(e.target.value)}/></td>
+                <td>Enter Email Id</td>
+                <td ><input type="email" name="" placeholder="Enter Email Id" onChange={(e) => setEmail(e.target.value)} value={email}/></td>
+            </tr> 
+            <tr>
+                <td>Enter Blood group</td>
+                <td><input type="name" name="" placeholder="Enter Blood group" onChange={(e) => setBloodgroup(e.target.value)} value={bloodgroup}/></td>
             </tr>
             <tr>
-            <td style={{color: 'blue'}}><b>Enter your password</b></td>
-                {
-                    flag == 0 ? 
-                    <>
-                    <td style={{ position: 'relative' }}><input type="password" name="" placeholder="Enter password" onChange={(e) => setpassword(e.target.value)}/></td>
-                     <td><button onClick={showHide} style={{ marginRight : '35px'}}><FaEye /></button></td>
-                    </>
-                    
-                    :
-                    <>
-                    <td style={{ position: 'relative' }}><input type="text" name="" placeholder="Enter password" onChange={(e) => setpassword(e.target.value)}/></td>
-                    <td><button onClick={showHide} style={{ marginRight : '35px'}}><FaEyeSlash /></button></td>
+                <td>Enter your contact no</td>
+                <td><input type="number" name="" placeholder="Enter your contact no" onChange={(e) => setcontact(e.target.value)} value={contact}/></td>
+            </tr>
+            <tr>
+                <td>Enter Your Address</td>
+                <td><textarea type="text" name="" placeholder="Enter Address" onChange={(e) => setAddress(e.target.value)} value={address}/></td>
+            </tr>
+            {/* <tr>
+                <td>Enter password</td>
+                <td><input type="password" name="" placeholder="Enter password" onChange={(e) => setpassword(e.target.value)} value={password}/></td>
+            </tr> */}
 
-                    </>
-                }
-                {/* <td><button onClick={showHide}>ShowHide</button></td> */}
-            </tr>
+            {/* <tr>
+                <td>Select Gender</td>
+                <td>
+                    <input type="radio" name="" onChange={(e) => setGender(e.target.value)}></input>Male
+                    <input type="radio" name="" onChange={(e) => setGender(e.target.value)}></input>Female
+                </td>
+            </tr> */}
+             
             
             <tr>
-                <td><input type="Submit" value="Login" onClick={loginUser}/></td>
+                <td><input onClick= {update} type="Submit" value="Update"/></td>
             </tr>
-
+    
             <tr>
                 <td>{message}</td>
             </tr>
-
-            <tr>
-                <td>
-                {/* <td style={{color: 'black'}}><b>New User?</b> */}
-                  <Link to="/newuser" style={{color: 'black'}}><b>New User?</b></Link> <br></br>
-                  {/* <Link to="/forgetuser" style={{color: 'black'}}><b>Forget Password?</b></Link>  */}
-                  <Link to="/fuser" style={{color: 'black'}}><b>Forget Password?</b></Link> 
-                  </td>
-            </tr>
-
-        
     
         </table>
+
+        {/* {email} <br></br>
+            {name} <br></br>
+            {bgrp} <br></br>
+            {address} <br></br>
+            {dob} <br></br>
+            {age} <br></br>
+            {gender} <br></br> */}
 
         </>
     )
 }
 
-export default BloodUser
-           
-
-      
+export default BDEdit
