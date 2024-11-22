@@ -44,7 +44,7 @@ function BDUserEdit(){
         else
         {
             setMessage("Update Failed")
-        }
+        }
     }
 
        
@@ -68,7 +68,7 @@ function BDUserEdit(){
             getDatabyId(id)
          },[])
 
-    
+    
     return(
         <>
 
