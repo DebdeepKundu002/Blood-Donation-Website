@@ -50,8 +50,8 @@ function Dfgpassword(){
         else
         {
             setMessage("Sorry Your Email is Not Registered, Try Again")
-        }
-    }
+        }
+    }
 
     const validateOTP = () =>{
         console.log("OTP: "+OTP+" "+"User OTP: "+userOTP)
