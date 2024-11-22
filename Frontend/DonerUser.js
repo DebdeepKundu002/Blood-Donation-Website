@@ -40,8 +40,8 @@ function DonerUser(){
         else
         {
             setMessage("Login Failed")
-        }
-    }
+        }
+    }
 
     const showHide = (id) =>{
         if(flag == 0)
@@ -109,6 +109,3 @@ function DonerUser(){
 }
 
 export default DonerUser
-           
-
-      
