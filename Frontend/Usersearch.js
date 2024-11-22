@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 // import Showdataintable from "./Showdataintable"
-import { Navigate, useNavigate } from 'react-router-dom';
+// import { Navigate, useNavigate } from 'react-router-dom';
 import './App.css'
 
 function Usersearch() {
@@ -9,7 +9,7 @@ function Usersearch() {
     const [address, setAddress] = useState([])
     const [bloodgroup, setBloodgroup] = useState([])
 
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
 
     const getData = async () => {
         const response = await fetch('http://localhost:5000/user/getAllUser');
@@ -18,20 +18,21 @@ function Usersearch() {
     }
 
     //ei part ta korchilam
+    
 
 
-    const searchbyboth = async (value) => {
+    //searchbybloodgroup
+    const searchbybloodgrouporaddress = async (value) => {
         setAddress(value)
 
-        if (value == null || value === "") {
+        if (value === null || value === "" || value==="a") {
             getData()
         }
 
         else {
 
             const byaddressandblood = {
-                "address": value,
-                "bloodgroup": bloodgroup
+                "bloodgrouporaddress": value
             }
 
             const requestOptions = {
@@ -40,9 +41,22 @@ function Usersearch() {
                 body: JSON.stringify(byaddressandblood)
             };
 
-            const response = await fetch('http://localhost:5000/user/searchbyboth', requestOptions)
+            const response = await fetch('http://localhost:5000/user/searchbybloodgrouporaddress', requestOptions)
             const data1 = await response.json();
-            setAlldonors(data1)
+
+            // Filter results to match the exact blood group if necessary
+            // const exactMatches = data1.filter(donor => donor.bloodgroup === value || donor.address.includes(value));
+            const filteredDonors = data1.filter(donor => {
+                const bloodGroups = ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"];
+                if (bloodGroups.includes(value)) {
+                    // Exact match for blood group
+                    return donor.bloodgroup === value;
+                } else {
+                    // Case-insensitive match for address
+                    return donor.address.toLowerCase().includes(value.toLowerCase());
+                }
+            });
+            setAlldonors(filteredDonors)
         }
     }
 
@@ -50,21 +64,33 @@ function Usersearch() {
 
     //ei part ta korchilam
     // for blood group
-    const searchbybloodgroup = async (value) => {
-        setBloodgroup(value)
-        if (value == null || value === "") {
-            getData()
-        }
+    // const searchbybloodgroup = async (value) => {
+    //     if (value === null || value === "" || value ==="a") {
+    //         getData()
+    //     }
 
-        else {
+    //     else {
 
-            const response = await fetch(`http://localhost:5000/user/searchbybloodgroup/${value}`);
-            const data1 = await response.json();
-            setAlldonors(data1)
-            console.log(data1);
-        }
-    }
-
+    //         const response = await fetch(`http://localhost:5000/user/searchbybloodgrouporaddress/${value}`);
+    //         const data1 = await response.json();
+    //         setAlldonors(data1)
+    //         console.log(data1);
+    //     }
+    // }
+    //for location
+    // const searchbylocation = async(value) =>{
+    //     if(value === null || value === "")
+    //     {
+    //       getData()
+    //     }
+    //     else
+    //     {
+    //       const response =await   fetch(`http://localhost:5000/user/searchbyaddress/${value}`);
+    //       const data1 = await response.json()
+    //       setAlldonors(data1)
+    //       console.log(data1);
+    //     }
+    //   }
 
 
     useEffect(() => {
@@ -82,12 +108,11 @@ function Usersearch() {
                 <tr>
                     <th className="tableheadsearch">Search User</th>
                 </tr>
-                
-                <tr>
-                    <td style={{color: 'blue'}} ><b>Select Blood Group</b></td> <td> <select onChange={(e) => searchbybloodgroup(e.target.value)} name="" id="" title="Blood Group" className="bloodgroup">
 
-                        <option >Select your bloodgroup</option>
-                        <option value="a+">a+</option>
+                <tr>
+                    <td style={{ color: 'blue' }} ><b>Select Blood Group</b></td> <td> <select onChange={(e) => searchbybloodgrouporaddress(e.target.value)} name="" id="" title="Blood Group" className="bloodgroup">
+
+                        <option value="a">Select your bloodgroup</option>
                         <option >A-</option>
                         <option >A+</option>
                         <option >B+</option>
@@ -101,7 +126,7 @@ function Usersearch() {
                 </tr>
                 <br></br>
                 <tr>
-                    <td style={{color: 'blue'}}><b>Enter Your Location</b>  </td> <td> <input onChange={(e) => searchbyboth(e.target.value)} type="search" placeholder="Enter Location" />
+                    <td style={{ color: 'blue' }}><b>Enter Your Location</b>  </td> <td> <input onKeyUp={(e) => searchbybloodgrouporaddress(e.target.value)} type="search" placeholder="Enter Location" className="" />
                         {/* <td>Enter Your blood group:  <input onChange={(e) => search(e.target.value)} type="search" placeholder="Enter blood group" /> */}
                     </td>
                 </tr>
@@ -123,20 +148,20 @@ function Usersearch() {
             <h2><b>User's List</b></h2>
 
 
-            <table class="table" style={{marginLeft:'0px', marginTop:'-2px',marginBottom: '25%'}}>
-      <thead>
-        <tr>
-          <th scope="col">#</th>
-          <th scope="col">Name</th>
-          <th scope="col">Email</th>
-          <th scope="col">Password</th>
-          <th scope="col">Address</th>
-          <th scope="col">Contact</th>
-          <th scope="col">Bloodgroup</th>
-          {/* <th scope="col">Action</th> */}
-        </tr>
-      </thead>
-      <tbody >
+            <table class="table" style={{ marginLeft: '0px', marginTop: '-2px', marginBottom: '25%' }}>
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Password</th>
+                        <th scope="col">Address</th>
+                        <th scope="col">Contact</th>
+                        <th scope="col">Bloodgroup</th>
+                        {/* <th scope="col">Action</th> */}
+                    </tr>
+                </thead>
+                <tbody >
                     {
                         alldonors.map((data, index) =>
 
@@ -163,7 +188,7 @@ function Usersearch() {
 
                 </tbody>
 
-    </table>
+            </table>
 
 
         </>
