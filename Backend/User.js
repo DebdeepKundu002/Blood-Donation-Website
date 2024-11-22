@@ -4,17 +4,18 @@ const express = require('express');
 // const app = express();
 const nodemailer = require('nodemailer');
 const bcrypt = require("bcrypt")
+const crypto = require('crypto')
 
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-      user: 'anup@euphoriagenx.in',
-      pass: 'blwjvnxilinvyela'
+      user: 'debdeepkundu643@gmail.com',
+      pass: 'izdbeybfzycpsqul'
     }
   });
 
 const urouter=express.Router() 
-
+const Validation = require('./Validation')
 
 // app.use(express.json());
 
@@ -66,7 +67,7 @@ urouter.post('/send-email/:otp',async (req, res) => {
    if(response.length > 0)
    {
        const mailOptions = {
-         from: 'anup@euphoriagenx.in',
+         from: 'debdeepkundu643@gmail.com',
          to: req.body.email,
          subject: 'Password sent By Blood Donation App.',
          text: 'Your One Time Password(OTP) is : '+otp
@@ -105,25 +106,32 @@ urouter.post('/send-email/:otp',async (req, res) => {
 //     }
 //  })
 
- urouter.post('/loginUser', async (req, res) => {
+ urouter.post('/loginUser', Validation,async (req, res) => {
 
     const password = req.body.password
 
     const res1 = await User.find({email: req.body.email})
-
-    const hpass = res1[0].password
-
-    const result = await comparePassword(password, hpass)
-
-    console.log(103, result)
-
-   if(result)
+    if(res1.length>0)
     {
-        res.send({'message': true})
+        const hpass = res1[0].password
+
+        const result = await comparePassword(password, hpass)
+    
+        console.log(103, result)
+    
+       if(result)
+        {
+            res.send({'message': true})
+        }
+        else{
+            res.send({'message': false})
+        }
     }
     else{
-        res.send({'message': false})
-    }
+        res.send({'message': false})   
+    }
+
+   
 
 })
 
@@ -141,7 +149,7 @@ urouter.post('/send-email/:otp',async (req, res) => {
 
 //Post Method
 urouter.post('/registerUser', async (req, res) => {
-
+    const token = crypto.randomBytes(20).toString('hex');
     const password = req.body.password;
 
     const hpass = await hashPassword(password);
@@ -152,7 +160,8 @@ urouter.post('/registerUser', async (req, res) => {
             password: hpass,
             address: req.body.address,
             contact: req.body.contact,
-            bloodgroup: req.body.bloodgroup
+            bloodgroup: req.body.bloodgroup,
+            token: token
         })
     try{
         const response = await data.save();
@@ -187,33 +196,55 @@ urouter.get('/getUserById/:id', async(req, res) => {
 
 })
 
-
-urouter.get('/searchbybloodgroup/:bloodgroup', async(req, res) => {
-    const bloodgroup = req.params.bloodgroup
-    try{
-        const data = await User.find({bloodgroup : bloodgroup});
-        res.json(data)
-    }
-    catch(error){
-        res.status(500).json({message: error.message})
-    }
-
-})
-
-
-urouter.post('/searchbyboth', async (req, res) => {
+//searchby bloodgrouporaddress
+urouter.post('/searchbybloodgrouporaddress', async (req, res) => {
+    const  bloodgrouporaddress = req.body.bloodgrouporaddress; // Use query parameters to get bloodgroup and address
+    
     try {
-        // const data = await Donor.find({ "bloodgroup": req.params.bloodgroup });
-        // res.json(data)
-
-        const datatwo = await User.find({ address: { $regex: req.body.address}, "bloodgroup": req.body.bloodgroup }  );
-        res.json(datatwo)
+        const data = await User.find({
+            $or: [
+                { bloodgroup: bloodgrouporaddress },
+                { address: {$regex : bloodgrouporaddress, $options: 'i'} }
+            ]
+        });
+        res.json(data);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
     }
-    catch (error) {
-        res.status(500).json({ message: error.message })
-    }
+});
 
-})
+//searchby both
+// urouter.post('/searchbyboth', async (req, res) => {
+//     try {
+//         // const data = await Donor.find({ "bloodgroup": req.params.bloodgroup });
+//         // res.json(data)
+
+//         const datatwo = await User.find({ address: { $regex: req.body.address}, "bloodgroup": req.body.bloodgroup }  );
+//         res.json(datatwo)
+//     }
+//     catch (error) {
+//         res.status(500).json({ message: error.message })
+//     }
+
+// })
+
+// urouter.post('/searchbyboth', async (req, res) => {
+//     try {
+//         const address = req.body.address;
+//         const bloodgroup = req.body.bloodgroup;
+
+//         const datatwo = await User.find({ 
+//             address: { $regex: address, $options: 'i' }, // Case-insensitive regex search
+//             bloodgroup: { $regex: bloodgroup, $options: 'i' } // Case-insensitive regex search
+//         });
+
+//         res.json(datatwo);
+//     } catch (error) {
+//         res.status(500).json({ message: error.message });
+//     }
+// });
+
+
 
 
 urouter.get('/searchbyname/:name', async(req, res) => {
@@ -230,7 +261,7 @@ urouter.get('/searchbyname/:name', async(req, res) => {
 urouter.get('/searchbyaddress/:address', async(req, res) => {
     const address = req.params.address
     try{
-        const data = await User.find({address : {$regex : address}});
+        const data = await User.find({ address: { $regex: address, $options: 'i' } });
         res.json(data)
     }
     catch(error){
