@@ -39,8 +39,8 @@ function DonerUserRegistration(){
         else
         {
             setMessage("Registration Failed")
-        }
-    }
+        }
+    }
     return(
         <>
 
