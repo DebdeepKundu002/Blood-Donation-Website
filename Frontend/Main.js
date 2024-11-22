@@ -9,7 +9,7 @@ import {
 } from "react-router-dom";
 
 import './App.css'
-import Homeone from "./Homeone";
+import Homeone from "./Homeone"; 
 import DonerUser from "./DonerUser";
 import Search from "./Search";
 import Footer1 from "./Footer1"
@@ -26,6 +26,7 @@ import { useEffect, useState } from "react";
 // import Donerforgetpassword from './Donerforgetpassword';
 import Fgpassword from './Fgpassword';
 import Dfgpassword from './Dfgpassword';
+import Payment from './Payment';
 
 
 function Main(){
@@ -38,14 +39,13 @@ function Main(){
         {
             setFlag(1)
         }
+
+        if(localStorage.getItem('loggedDoner'))
+            {
+                setFlag(1)
+            }
     }, [])
 
-    useEffect(() =>{
-        if(localStorage.getItem('loggedDoner'))
-        {
-            setFlag(1)
-        }
-    }, [])
 
     const logout = () =>{
         localStorage.removeItem('loggedUser')
@@ -56,11 +56,13 @@ function Main(){
 
     return(
         <>
+       
+
         <Router>
         
         <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
             <a className="navbar-brand" href="#">
-                <img src="images/blood vector one.jpg" alt="" width={30} height={24}/>
+                <img src="images/blood-donation-design.jpg" alt="" width={30} height={24}/>
                 <b> Blood Donation</b>
             </a>
             <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -106,13 +108,16 @@ function Main(){
                     :
                     <>
                         <li className="nav-item active">
-                          <Link className="nav-link" to="/home">Home</Link>
+                          <Link className="nav-link" to="/">Home</Link>
                          </li>
                         <li className="nav-item">
                             <Link className="nav-link" to="/user">User</Link>
                         </li>
                         <li className="nav-item">
                             <Link className="nav-link" to="/doner">Doner</Link>
+                        </li>
+                        <li className="nav-item">
+                            <Link className="nav-link" to="/cpayment">Charity Payment</Link>
                         </li>
                     </>
                 }
@@ -126,6 +131,7 @@ function Main(){
             </div>
             </nav>
 
+           <br></br>
             <Routes>
                 {/* <Route exact path="/"  element={<BloodUser/>}></Route> */}
                 <Route exact path="/"  element={<Homeone />}></Route>
@@ -143,6 +149,8 @@ function Main(){
                 {/* <Route exact path="/forgetuserdoner"  element={<Donerforgetpassword />}></Route> */}
                 <Route exact path="/fuser"  element={<Fgpassword />}></Route>
                 <Route exact path="/fgdoner"  element={<Dfgpassword />}></Route>
+                <Route exact path="/cpayment"  element={<Payment />}></Route>
+
 
             </Routes>
 
